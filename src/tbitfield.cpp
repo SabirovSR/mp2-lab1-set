@@ -26,6 +26,7 @@ TBitField::TBitField(const TBitField& bf) // конструктор копиро
 {
 	BitLen = bf.BitLen;
 	MemLen = bf.MemLen;
+
 	pMem = new TELEM[MemLen];
 	std::memcpy(pMem, bf.pMem, MemLen * sizeof(TELEM));
 }
@@ -48,7 +49,7 @@ TELEM TBitField::GetMemMask(const int n) const // битовая маска дл
 	if (n < 0 || n >= BitLen) {
 		throw std::out_of_range("Bit index out of range.");
 	}
-	return 1 << (n % (sizeof(TELEM) * 8)); // оператор сдвига слево
+	return 1 << n % (sizeof(TELEM) * 8); // оператор сдвига слево
 }
 
 // доступ к битам битового поля
@@ -116,7 +117,7 @@ int TBitField::operator!=(const TBitField& bf) const // сравнение
 
 TBitField TBitField::operator|(const TBitField& bf) // операция "или"
 {
-	int len = (BitLen > bf.BitLen) ? BitLen : bf.BitLen;
+	int len = BitLen > bf.BitLen ? BitLen : bf.BitLen;
 	TBitField result(len);
 	for (int i = 0; i < MemLen; ++i) {
 		result.pMem[i] = pMem[i] | bf.pMem[i];
@@ -126,12 +127,12 @@ TBitField TBitField::operator|(const TBitField& bf) // операция "или"
 
 TBitField TBitField::operator&(const TBitField& bf) // операция "и"
 {
-	int len = (BitLen < bf.BitLen) ? BitLen : bf.BitLen;
+	int len = BitLen < bf.BitLen ? BitLen : bf.BitLen;
 	TBitField result(len);
 	for (int i = 0; i < result.MemLen; ++i) {
 		result.pMem[i] = pMem[i] & bf.pMem[i];
 	}
-	return result;;
+	return result;
 }
 
 TBitField TBitField::operator~(void) // отрицание
