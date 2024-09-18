@@ -59,7 +59,7 @@ int TBitField::GetLength(void) const // получить длину (к-во б�
 	return BitLen;
 }
 
-void TBitField::SetBit(const int n) // установить бит
+void TBitField::SetBit(const int n) //установить бит
 {
 	if (n < 0 || n >= BitLen) {
 		throw std::out_of_range("Bit index out of range.");
@@ -127,7 +127,7 @@ TBitField TBitField::operator|(const TBitField& bf) // операция "или"
 
 TBitField TBitField::operator&(const TBitField& bf) // операция "и"
 {
-	int len = BitLen < bf.BitLen ? BitLen : bf.BitLen;
+	int len = BitLen > bf.BitLen ? BitLen : bf.BitLen;
 	TBitField result(len);
 	for (int i = 0; i < result.MemLen; ++i) {
 		result.pMem[i] = pMem[i] & bf.pMem[i];
@@ -141,6 +141,12 @@ TBitField TBitField::operator~(void) // отрицание
 	for (int i = 0; i < MemLen; ++i) {
 		result.pMem[i] = ~pMem[i];
 	}
+
+	int lastElementMask = (1 << (BitLen % (sizeof(TELEM) * 8))) - 1;
+	if (BitLen % (sizeof(TELEM) * 8) != 0) {
+		result.pMem[MemLen - 1] &= lastElementMask;
+	}
+
 	return result;
 }
 

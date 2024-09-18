@@ -12,7 +12,7 @@ static const int FAKE_INT = -1;
 static TBitField FAKE_BITFIELD(1);
 static TSet FAKE_SET(1);
 
-TSet::TSet(int mp) : BitField(-1)
+TSet::TSet(int mp) : BitField(mp), MaxPower(mp)
 {
     if (mp <= 0) {
         throw std::invalid_argument("MaxPower must be positive");
@@ -83,10 +83,8 @@ int TSet::operator!=(const TSet &s) const // сравнение
 
 TSet TSet::operator+(const TSet &s) // объединение
 {
-    if (MaxPower != s.MaxPower) {
-        throw std::invalid_argument("Sets must have the same MaxPower for union");
-    }
-    TSet result(MaxPower);
+    int maxPower = MaxPower > s.MaxPower ? MaxPower : s.MaxPower;
+    TSet result(maxPower);
     result.BitField = BitField | s.BitField;
     return result;
 }
@@ -113,10 +111,8 @@ TSet TSet::operator-(const int Elem) // разность с элементом
 
 TSet TSet::operator*(const TSet &s) // пересечение
 {
-    if (MaxPower != s.MaxPower) {
-        throw std::invalid_argument("Sets must have the same MaxPower for intersection");
-    }
-    TSet result(MaxPower);
+    int maxPower = MaxPower > s.MaxPower ? MaxPower : s.MaxPower;
+    TSet result(maxPower);
     result.BitField = BitField & s.BitField;
     return result;
 }
