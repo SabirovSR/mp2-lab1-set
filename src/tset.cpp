@@ -124,8 +124,7 @@ istream &operator>>(istream &istr, TSet &s) // ввод
     for (int i = 0; i < s.MaxPower; i++) {
         int elem;
         istr >> elem;
-        if (elem == 1)  s.InsElem(i);
-        else            s.DelElem(i);
+        (elem == 1) ? s.InsElem(i) : s.DelElem(i);
     }
 
     return istr;
