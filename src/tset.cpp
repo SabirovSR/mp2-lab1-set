@@ -14,9 +14,7 @@ static TSet FAKE_SET(1);
 
 TSet::TSet(int mp) : BitField(mp), MaxPower(mp)
 {
-    if (mp <= 0) {
-        throw std::invalid_argument("MaxPower must be positive");
-    }
+    if (mp <= 0) throw std::invalid_argument("MaxPower must be positive");
 }
 
 // конструктор копирования
@@ -38,25 +36,22 @@ int TSet::GetMaxPower(void) const // получить макс. к-во эл-т�
 
 int TSet::IsMember(const int Elem) const // элемент множества?
 {
-    if (Elem < 0 || Elem >= MaxPower) {
-        throw std::out_of_range("Element is out of bounds");
-    }
+    if (Elem < 0 || Elem >= MaxPower) throw std::out_of_range("Element is out of bounds");
+
     return BitField.GetBit(Elem);
 }
 
 void TSet::InsElem(const int Elem) // включение элемента множества
 {
-    if (Elem < 0 || Elem >= MaxPower) {
-        throw std::out_of_range("Element is out of bounds");
-    }
+    if (Elem < 0 || Elem >= MaxPower) throw std::out_of_range("Element is out of bounds");
+
     BitField.SetBit(Elem);
 }
 
 void TSet::DelElem(const int Elem) // исключение элемента множества
 {
-    if (Elem < 0 || Elem >= MaxPower) {
-        throw std::out_of_range("Element is out of bounds");
-    }
+    if (Elem < 0 || Elem >= MaxPower) throw std::out_of_range("Element is out of bounds");
+
     BitField.ClrBit(Elem);
 }
 
@@ -91,9 +86,8 @@ TSet TSet::operator+(const TSet &s) // объединение
 
 TSet TSet::operator+(const int Elem) // объединение с элементом
 {
-    if (Elem < 0 || Elem >= MaxPower) {
-        throw std::out_of_range("Element is out of bounds");
-    }
+    if (Elem < 0 || Elem >= MaxPower) throw std::out_of_range("Element is out of bounds");
+
     TSet result(*this);
     result.InsElem(Elem);
     return result;
@@ -101,9 +95,8 @@ TSet TSet::operator+(const int Elem) // объединение с элемент
 
 TSet TSet::operator-(const int Elem) // разность с элементом
 {
-    if (Elem < 0 || Elem >= MaxPower) {
-        throw std::out_of_range("Element is out of bounds");
-    }
+    if (Elem < 0 || Elem >= MaxPower) throw std::out_of_range("Element is out of bounds");
+
     TSet result(*this);
     result.DelElem(Elem);
     return result;
@@ -131,30 +124,15 @@ istream &operator>>(istream &istr, TSet &s) // ввод
     for (int i = 0; i < s.MaxPower; i++) {
         int elem;
         istr >> elem;
-        if (elem == 1) {
-            s.InsElem(i);
-        }
-        else {
-            s.DelElem(i);
-        }
+        if (elem == 1)  s.InsElem(i);
+        else            s.DelElem(i);
     }
+
     return istr;
 }
 
 ostream& operator<<(ostream &ostr, const TSet &s) // вывод
 {
-    //ostr << "{";
-    //bool first = true;
-    for (int i = 0; i < s.MaxPower; i++) {
-        ostr << i;
-        /*if (s.IsMember(i)) {
-            if (!first) {
-                ostr << ", ";
-            }
-            ostr << i;
-            first = false;
-        }*/
-    }
-    //ostr << "}";
+    ostr << s.BitField;
     return ostr;
 }
