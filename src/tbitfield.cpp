@@ -37,14 +37,14 @@ TBitField::~TBitField()
 int TBitField::GetMemIndex(const int n) const // индекс Мем для бита n
 {
 	if (n < 0 || n >= BitLen) throw std::out_of_range("Bit index out of range.");
-	
+
 	return n / (sizeof(TELEM) * 8);
 }
 
 TELEM TBitField::GetMemMask(const int n) const // битовая маска для бита n
 {
 	if (n < 0 || n >= BitLen) throw std::out_of_range("Bit index out of range.");
-	
+
 	return 1 << n % (sizeof(TELEM) * 8); // оператор сдвига слево
 }
 
@@ -58,14 +58,14 @@ int TBitField::GetLength(void) const // получить длину (к-во б�
 void TBitField::SetBit(const int n) //установить бит
 {
 	if (n < 0 || n >= BitLen) throw std::out_of_range("Bit index out of range.");
-	
+
 	pMem[GetMemIndex(n)] |= GetMemMask(n); // a = a | b; a |= b;
 }
 
 void TBitField::ClrBit(const int n) // очистить бит
 {
 	if (n < 0 || n >= BitLen) throw std::out_of_range("Bit index out of range.");
-	
+
 	pMem[GetMemIndex(n)] &= ~GetMemMask(n);
 }
 
@@ -95,8 +95,11 @@ int TBitField::operator==(const TBitField& bf) const // сравнение
 {
 	if (BitLen != bf.BitLen) return 0;
 
-	for (int i = 0; i < MemLen; ++i)
+	for (int i = 0; i < MemLen - 1; ++i)
 		if (pMem[i] != bf.pMem[i]) return 0;
+
+	for (int i = (MemLen - 1) * sizeof(TELEM) * 8; i < BitLen; i++)
+		if (GetBit(i) != bf.GetBit(i)) return 0;
 
 	return 1;
 }
@@ -109,6 +112,7 @@ int TBitField::operator!=(const TBitField& bf) const // сравнение
 TBitField TBitField::operator|(const TBitField& bf) // операция "или"
 {
 	int len = BitLen > bf.BitLen ? BitLen : bf.BitLen;
+	len = std::max(BitLen, bf.BitLen);
 	TBitField result(len);
 	for (int i = 0; i < MemLen; ++i)
 		result.pMem[i] = pMem[i] | bf.pMem[i];
@@ -132,7 +136,7 @@ TBitField TBitField::operator~(void) // отрицание
 	for (int i = 0; i < MemLen; ++i)
 		result.pMem[i] = ~pMem[i];
 
-	int lastElementMask = (1 << (BitLen % (sizeof(TELEM) * 8))) - 1;
+	int lastElementMask = (1 << BitLen % (sizeof(TELEM) * 8)) - 1;
 	if (BitLen % (sizeof(TELEM) * 8) != 0)
 		result.pMem[MemLen - 1] &= lastElementMask;
 
@@ -145,7 +149,7 @@ istream& operator>>(istream& istr, TBitField& bf) // ввод
 {
 	int bit;
 	for (int i = 0; i < bf.BitLen; ++i)
-		 istr >> bit ? bf.SetBit(i) : bf.ClrBit(i);
+		istr >> bit ? bf.SetBit(i) : bf.ClrBit(i);
 	return istr;
 }
 
